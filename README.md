@@ -1,6 +1,6 @@
 # Servy
 
-**TODO: Add description**
+**My result after complete the course "Developing with Elixir/OTP" by Pragmactic Studio**
 
 ## Installation
 
