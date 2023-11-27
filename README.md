@@ -1,6 +1,6 @@
 # Servy
 
-**My result after complete the course "Developing with Elixir/OTP" by Pragmactic Studio**
+**My result after complete the course "Developing with Elixir/OTP" by Pragmatic Studio**
 
 ## Installation
 
