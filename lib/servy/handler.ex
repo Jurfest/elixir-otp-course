@@ -21,11 +21,14 @@ defmodule Servy.Handler do
     %{conv | resp_body: "Bears, Tigers, Lions"}
   end
 
+  # The Content-Length header must indicate the size of the body in bytes
   def format_response(conv) do
+    # Content-Length: #{String.length(conv.resp_body)}
+
     """
     HTTP/1.1 200 OK
     Content-Type: text/html
-    Content-Length: #{String.length(conv.resp_body)}
+    Content-Length: #{byte_size(conv.resp_body)}
 
     #{conv.resp_body}
     """
