@@ -52,6 +52,10 @@ defmodule Servy.Handler do
     %{conv | status: 200, resp_body: "Bear #{id}"}
   end
 
+  def route(conv, "DELETE", "/bears/" <> id) do
+    %{conv | status: 403, resp_body: "Deleting a bear is forbidden!"}
+  end
+
   # Default function clause has to be defined last and grouped together
   def route(conv, _method, path) do
     %{conv | status: 404, resp_body: "No #{path} here!"}
@@ -125,6 +129,18 @@ IO.puts(response)
 # bears/1
 request = """
 GET /bears/1 HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept: */*
+
+"""
+
+response = Servy.Handler.handle(request)
+IO.puts(response)
+
+# delete
+request = """
+DELETE /bears/1 HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
 Accept: */*
