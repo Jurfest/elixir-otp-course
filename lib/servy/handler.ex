@@ -1,4 +1,7 @@
 defmodule Servy.Handler do
+  # The Logger module uses Elixir macros, so it has to be required, for the macros to do their magic
+  require Logger
+
   def handle(request) do
     request
     |> parse()
@@ -10,18 +13,38 @@ defmodule Servy.Handler do
     |> format_response()
   end
 
-  # /bears?id=1
   def rewrite_path(%{path: "/wildlife"} = conv) do
     %{conv | path: "/wildthings"}
   end
 
-  def rewrite_path(%{path: "/bears?id=" <> id} = conv) do
-    %{conv | path: "/bears/#{id}"}
+  # /bears?id=1
+  # def rewrite_path(%{path: "/bears?id=" <> id} = conv) do
+  #   %{conv | path: "/bears/#{id}"}
+  # end
+
+  # def rewrite_path(conv), do: conv
+
+  # Generic rewrite function using regular expresion
+  def rewrite_path(%{path: path} = conv) do
+    regex = ~r{\/(?<thing>\w+)\?id=(?<id>\d+)}
+    captures = Regex.named_captures(regex, path)
+    rewrite_path_captures(conv, captures)
   end
 
-  def rewrite_path(conv), do: conv
+  def rewrite_path_captures(conv, %{"thing" => thing, "id" => id}) do
+    %{conv | path: "/#{thing}/#{id}"}
+  end
+
+  def rewrite_path_captures(conv, nil), do: conv
 
   def log(conv), do: IO.inspect(conv)
+
+  # def log(conv) do
+  #   Logger.info(conv)
+  #   # Logger.warn("Do we have a problem, Houston?")
+  #   # Logger.error("Danger, Will Robinson!")
+  #   conv
+  # end
 
   # Transform the request string into a key-value pair, i.e., a map (which corresponds to JS object)
   def parse(request) do
@@ -72,6 +95,24 @@ defmodule Servy.Handler do
   def route(%{method: "GET", path: "/bears/" <> id} = conv) do
     # def route(conv, "GET", "/bears/" <> id) do
     %{conv | status: 200, resp_body: "Bear #{id}"}
+  end
+
+  def route(%{method: "GET", path: "/about"} = conv) do
+    # __DIR__ is a Elixir macro that returns the directory of the file where the code is being executed.
+    # It is useful for working with relative paths relative to the current file location.
+    # Path.expand/2 combibes the relative path with the __DIR__ to generate the absolute path
+    file = Path.expand("../../pages", __DIR__)
+    |> Path.join("about.html")
+    case File.read(file) do
+      {:ok, content} ->
+        %{conv | status: 200, resp_body: content}
+
+      {:error, :enoent} ->
+        %{conv | status: 404, resp_body: "File not found!"}
+
+      {:error, reason} ->
+        %{conv | status: 500, resp_body: "File error #{reason}"}
+    end
   end
 
   def route(%{method: "DELETE", path: "/bears/" <> _id} = conv) do
@@ -221,3 +262,15 @@ IO.puts(response)
 
 # Bears, Lions, Tigers
 # """
+
+# /about
+request = """
+GET /about HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept: */*
+
+"""
+
+response = Servy.Handler.handle(request)
+IO.puts(response)
