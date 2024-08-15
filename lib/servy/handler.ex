@@ -1,7 +1,18 @@
 defmodule Servy.Handler do
+  @moduledoc """
+  Handles HTTP requests.
+  """
+
   # The Logger module uses Elixir macros, so it has to be required, for the macros to do their magic
   require Logger
 
+  # __DIR__ is a Elixir macro that returns the directory of the file where the code is being executed.
+  # It is useful for working with relative paths relative to the current file location.
+  @pages_path Path.expand("../../pages", __DIR__)
+
+  @doc """
+  Transforms the request into a response.
+  """
   def handle(request) do
     request
     |> parse()
@@ -94,7 +105,7 @@ defmodule Servy.Handler do
 
   def route(%{method: "GET", path: "/bears/new"} = conv) do
     file =
-      Path.expand("../../pages", __DIR__)
+      @pages_path
       |> Path.join("form.html")
 
     case File.read(file) do
@@ -110,7 +121,7 @@ defmodule Servy.Handler do
   end
 
   def route(%{method: "GET", path: "/pages/" <> file} = conv) do
-    Path.expand("../../pages", __DIR__)
+    @pages_path
     |> Path.join(file <> ".html")
     |> File.read()
     |> handle_file(conv)
@@ -118,10 +129,8 @@ defmodule Servy.Handler do
 
   # Multi-clause functions
   def route(%{method: "GET", path: "/about"} = conv) do
-    # __DIR__ is a Elixir macro that returns the directory of the file where the code is being executed.
-    # It is useful for working with relative paths relative to the current file location.
     # Path.expand/2 combibes the relative path with the __DIR__ to generate the absolute path
-    Path.expand("../../pages", __DIR__)
+    @pages_path
     |> Path.join("about.html")
     |> File.read()
     |> handle_file(conv)
@@ -144,7 +153,7 @@ defmodule Servy.Handler do
   #   # __DIR__ is a Elixir macro that returns the directory of the file where the code is being executed.
   #   # It is useful for working with relative paths relative to the current file location.
   #   # Path.expand/2 combibes the relative path with the __DIR__ to generate the absolute path
-  #   file = Path.expand("../../pages", __DIR__)
+  #   file = @pages_path
   #   |> Path.join("about.html")
   #   case File.read(file) do
   #     {:ok, content} ->
@@ -183,6 +192,7 @@ defmodule Servy.Handler do
 
   def emojify(conv), do: conv
 
+  @doc "Los 404 requests"
   def track(%{status: 404, path: path} = conv) do
     IO.puts("Warning: #{path} is on the loose!")
     conv
