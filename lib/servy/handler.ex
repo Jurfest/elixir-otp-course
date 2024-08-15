@@ -3,8 +3,9 @@ defmodule Servy.Handler do
     request
     |> parse()
     |> rewrite_path()
-    |> log
+    |> log()
     |> route()
+    |> emojify()
     |> track()
     |> format_response()
   end
@@ -83,6 +84,12 @@ defmodule Servy.Handler do
     # def route(conv, _method, path) do
     %{conv | status: 404, resp_body: "No #{path} here!"}
   end
+
+  def emojify(%{resp_body: resp_body, status: 200} = conv) do
+    %{conv | resp_body: "🎉 #{resp_body} 🎉"}
+  end
+
+  def emojify(conv), do: conv
 
   def track(%{status: 404, path: path} = conv) do
     IO.puts("Warning: #{path} is on the loose!")
