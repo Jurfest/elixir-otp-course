@@ -93,8 +93,6 @@ defmodule Servy.Handler do
   end
 
   def route(%{method: "GET", path: "/bears/new"} = conv) do
-    IO.puts("Here I am")
-
     file =
       Path.expand("../../pages", __DIR__)
       |> Path.join("form.html")
@@ -109,6 +107,13 @@ defmodule Servy.Handler do
       {:error, reason} ->
         %{conv | status: 500, resp_body: "File error #{reason}"}
     end
+  end
+
+  def route(%{method: "GET", path: "/pages/" <> file} = conv) do
+    Path.expand("../../pages", __DIR__)
+    |> Path.join(file <> ".html")
+    |> File.read()
+    |> handle_file(conv)
   end
 
   # Multi-clause functions
@@ -321,6 +326,18 @@ IO.puts(response)
 # /bears/new
 request = """
 GET /bears/new HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept: */*
+
+"""
+
+response = Servy.Handler.handle(request)
+IO.puts(response)
+
+# /pages/contact
+request = """
+GET /pages/contact HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
 Accept: */*
