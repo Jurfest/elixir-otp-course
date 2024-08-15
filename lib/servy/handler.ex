@@ -92,17 +92,13 @@ defmodule Servy.Handler do
     %{conv | status: 200, resp_body: "Teddy, Smokey, Paddington"}
   end
 
-  def route(%{method: "GET", path: "/bears/" <> id} = conv) do
-    # def route(conv, "GET", "/bears/" <> id) do
-    %{conv | status: 200, resp_body: "Bear #{id}"}
-  end
+  def route(%{method: "GET", path: "/bears/new"} = conv) do
+    IO.puts("Here I am")
 
-  def route(%{method: "GET", path: "/about"} = conv) do
-    # __DIR__ is a Elixir macro that returns the directory of the file where the code is being executed.
-    # It is useful for working with relative paths relative to the current file location.
-    # Path.expand/2 combibes the relative path with the __DIR__ to generate the absolute path
-    file = Path.expand("../../pages", __DIR__)
-    |> Path.join("about.html")
+    file =
+      Path.expand("../../pages", __DIR__)
+      |> Path.join("form.html")
+
     case File.read(file) do
       {:ok, content} ->
         %{conv | status: 200, resp_body: content}
@@ -113,6 +109,53 @@ defmodule Servy.Handler do
       {:error, reason} ->
         %{conv | status: 500, resp_body: "File error #{reason}"}
     end
+  end
+
+  # Multi-clause functions
+  def route(%{method: "GET", path: "/about"} = conv) do
+    # __DIR__ is a Elixir macro that returns the directory of the file where the code is being executed.
+    # It is useful for working with relative paths relative to the current file location.
+    # Path.expand/2 combibes the relative path with the __DIR__ to generate the absolute path
+    Path.expand("../../pages", __DIR__)
+    |> Path.join("about.html")
+    |> File.read()
+    |> handle_file(conv)
+  end
+
+  def handle_file({:ok, content}, conv) do
+    %{conv | status: 200, resp_body: content}
+  end
+
+  def handle_file({:error, :enoent}, conv) do
+    %{conv | status: 404, resp_body: "File not found!"}
+  end
+
+  def handle_file({:error, reason}, conv) do
+    %{conv | status: 500, resp_body: "File error #{reason}"}
+  end
+
+  # Case expression - it's a design decision, depending on situation and preference
+  # def route(%{method: "GET", path: "/about"} = conv) do
+  #   # __DIR__ is a Elixir macro that returns the directory of the file where the code is being executed.
+  #   # It is useful for working with relative paths relative to the current file location.
+  #   # Path.expand/2 combibes the relative path with the __DIR__ to generate the absolute path
+  #   file = Path.expand("../../pages", __DIR__)
+  #   |> Path.join("about.html")
+  #   case File.read(file) do
+  #     {:ok, content} ->
+  #       %{conv | status: 200, resp_body: content}
+
+  #     {:error, :enoent} ->
+  #       %{conv | status: 404, resp_body: "File not found!"}
+
+  #     {:error, reason} ->
+  #       %{conv | status: 500, resp_body: "File error #{reason}"}
+  #   end
+  # end
+
+  def route(%{method: "GET", path: "/bears/" <> id} = conv) do
+    # def route(conv, "GET", "/bears/" <> id) do
+    %{conv | status: 200, resp_body: "Bear #{id}"}
   end
 
   def route(%{method: "DELETE", path: "/bears/" <> _id} = conv) do
@@ -266,6 +309,18 @@ IO.puts(response)
 # /about
 request = """
 GET /about HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept: */*
+
+"""
+
+response = Servy.Handler.handle(request)
+IO.puts(response)
+
+# /bears/new
+request = """
+GET /bears/new HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
 Accept: */*
