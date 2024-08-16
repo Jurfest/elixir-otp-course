@@ -1,4 +1,8 @@
 defmodule Servy.Parser do
+
+  # alias Servy.Conv, as: Conv
+  alias Servy.Conv
+
   # Transform the request string into a key-value pair, i.e., a map (which corresponds to JS object)
   def parse(request) do
     [method, path, _] =
@@ -8,11 +12,9 @@ defmodule Servy.Parser do
       |> String.split(" ")
 
     # Last expression of the function is returned automatically
-    %{
+    %Conv{
       method: method,
       path: path,
-      resp_body: "",
-      status: nil
     }
   end
 end
