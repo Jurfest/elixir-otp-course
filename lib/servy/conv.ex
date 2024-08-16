@@ -4,6 +4,9 @@ defmodule Servy.Conv do
   # It can be thought also as a typed map - it brings type safety
   defstruct method: "", path: "", resp_body: "", status: nil
 
+  # Keyword lists aren't yet another collection, but rather a tasty mashup of lists and tuples.
+  # [ {:method, ""}, {:path, ""}, {:resp_body, ""}, {:status, nil} ]
+
   def full_status(conv) do
     "#{conv.status} #{status_reason(conv.status)}"
   end
