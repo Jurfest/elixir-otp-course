@@ -5,10 +5,19 @@ defmodule Servy.Handler do
 
   # __DIR__ is a Elixir macro that returns the directory of the file where the code is being executed.
   # It is useful for working with relative paths relative to the current file location.
-  @pages_path Path.expand("../../pages", __DIR__)
+  # @pages_path Path.expand("../../pages", __DIR__)
+  # File.cwd! returns the current working directory. Mix always runs from the root project directory.
+  # Afunction name ending with !, denerally speaking, is a naming convention that conveys that
+  # the function will raise an exception if it fails. In particular, calling File.cwd! is the
+  # same as calling File.cwd but it raises an exception if for some reason there's a problem.
+  @pages_path Path.expand("pages", File.cwd!)
 
   import Servy.Plugins, only: [rewrite_path: 1, log: 1, track: 1]
   import Servy.Parser, only: [parse: 1]
+  import Servy.FileHandler, only: [handle_file: 2]
+  # import SomeModule, except: :[some_function: 3]
+  # import SomeModule, only: :functions
+  # import SomeModule, only: :macros
 
   @doc "Transforms the request into a response."
   def handle(request) do
@@ -97,18 +106,6 @@ defmodule Servy.Handler do
   def route(%{path: path} = conv) do
     # def route(conv, _method, path) do
     %{conv | status: 404, resp_body: "No #{path} here!"}
-  end
-
-  def handle_file({:ok, content}, conv) do
-    %{conv | status: 200, resp_body: content}
-  end
-
-  def handle_file({:error, :enoent}, conv) do
-    %{conv | status: 404, resp_body: "File not found!"}
-  end
-
-  def handle_file({:error, reason}, conv) do
-    %{conv | status: 500, resp_body: "File error #{reason}"}
   end
 
   # Case expression - it's a design decision, depending on situation and preference
