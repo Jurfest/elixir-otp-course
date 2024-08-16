@@ -2,7 +2,11 @@ defmodule Servy.Conv do
   # A struct instance is just a special kind of map with a fix set of
   # keys and default values.
   # It can be thought also as a typed map - it brings type safety
-  defstruct method: "", path: "", resp_body: "", status: nil
+  defstruct method: "",
+            path: "",
+            params: %{},
+            resp_body: "",
+            status: nil
 
   # Keyword lists aren't yet another collection, but rather a tasty mashup of lists and tuples.
   # [ {:method, ""}, {:path, ""}, {:resp_body, ""}, {:status, nil} ]
