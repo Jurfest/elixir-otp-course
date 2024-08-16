@@ -3,75 +3,22 @@ defmodule Servy.Handler do
   Handles HTTP requests.
   """
 
-  # The Logger module uses Elixir macros, so it has to be required, for the macros to do their magic
-  require Logger
-
   # __DIR__ is a Elixir macro that returns the directory of the file where the code is being executed.
   # It is useful for working with relative paths relative to the current file location.
   @pages_path Path.expand("../../pages", __DIR__)
 
-  @doc """
-  Transforms the request into a response.
-  """
+  import Servy.Plugins, only: [rewrite_path: 1, log: 1, track: 1]
+  import Servy.Parser, only: [parse: 1]
+
+  @doc "Transforms the request into a response."
   def handle(request) do
     request
     |> parse()
     |> rewrite_path()
     |> log()
     |> route()
-    |> emojify()
     |> track()
     |> format_response()
-  end
-
-  def rewrite_path(%{path: "/wildlife"} = conv) do
-    %{conv | path: "/wildthings"}
-  end
-
-  # /bears?id=1
-  # def rewrite_path(%{path: "/bears?id=" <> id} = conv) do
-  #   %{conv | path: "/bears/#{id}"}
-  # end
-
-  # def rewrite_path(conv), do: conv
-
-  # Generic rewrite function using regular expresion
-  def rewrite_path(%{path: path} = conv) do
-    regex = ~r{\/(?<thing>\w+)\?id=(?<id>\d+)}
-    captures = Regex.named_captures(regex, path)
-    rewrite_path_captures(conv, captures)
-  end
-
-  def rewrite_path_captures(conv, %{"thing" => thing, "id" => id}) do
-    %{conv | path: "/#{thing}/#{id}"}
-  end
-
-  def rewrite_path_captures(conv, nil), do: conv
-
-  def log(conv), do: IO.inspect(conv)
-
-  # def log(conv) do
-  #   Logger.info(conv)
-  #   # Logger.warn("Do we have a problem, Houston?")
-  #   # Logger.error("Danger, Will Robinson!")
-  #   conv
-  # end
-
-  # Transform the request string into a key-value pair, i.e., a map (which corresponds to JS object)
-  def parse(request) do
-    [method, path, _] =
-      request
-      |> String.split("\n")
-      |> List.first()
-      |> String.split(" ")
-
-    # Last expression of the function is returned automatically
-    %{
-      method: method,
-      path: path,
-      resp_body: "",
-      status: nil
-    }
   end
 
   # Transform parsed map into a new map | one arity call three arity function - function clauses
@@ -136,6 +83,22 @@ defmodule Servy.Handler do
     |> handle_file(conv)
   end
 
+  def route(%{method: "GET", path: "/bears/" <> id} = conv) do
+    # def route(conv, "GET", "/bears/" <> id) do
+    %{conv | status: 200, resp_body: "Bear #{id}"}
+  end
+
+  def route(%{method: "DELETE", path: "/bears/" <> _id} = conv) do
+    # def route(conv, "DELETE", "/bears/" <> id) do
+    %{conv | status: 403, resp_body: "Deleting a bear is forbidden!"}
+  end
+
+  # Default function clause has to be defined last and grouped together
+  def route(%{path: path} = conv) do
+    # def route(conv, _method, path) do
+    %{conv | status: 404, resp_body: "No #{path} here!"}
+  end
+
   def handle_file({:ok, content}, conv) do
     %{conv | status: 200, resp_body: content}
   end
@@ -166,39 +129,6 @@ defmodule Servy.Handler do
   #       %{conv | status: 500, resp_body: "File error #{reason}"}
   #   end
   # end
-
-  def route(%{method: "GET", path: "/bears/" <> id} = conv) do
-    # def route(conv, "GET", "/bears/" <> id) do
-    %{conv | status: 200, resp_body: "Bear #{id}"}
-  end
-
-  def route(%{method: "DELETE", path: "/bears/" <> _id} = conv) do
-    # def route(conv, "DELETE", "/bears/" <> id) do
-    %{conv | status: 403, resp_body: "Deleting a bear is forbidden!"}
-  end
-
-  # Default function clause has to be defined last and grouped together
-  def route(%{path: path} = conv) do
-    # def route(conv, _method, path) do
-    %{conv | status: 404, resp_body: "No #{path} here!"}
-  end
-
-  def emojify(%{status: 200} = conv) do
-    emojies = String.duplicate("🎉", 5)
-    body = emojies <> "\n" <> conv.resp_body <> "\n" <> emojies
-
-    %{conv | resp_body: body}
-  end
-
-  def emojify(conv), do: conv
-
-  @doc "Los 404 requests"
-  def track(%{status: 404, path: path} = conv) do
-    IO.puts("Warning: #{path} is on the loose!")
-    conv
-  end
-
-  def track(conv), do: conv
 
   # The Content-Length header must indicate the size of the body in bytes
   def format_response(conv) do
