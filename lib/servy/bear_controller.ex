@@ -1,6 +1,7 @@
 defmodule Servy.BearController do
   alias Servy.Wildthings
   alias Servy.Bear
+  alias Servy.View
 
   @templates_path Path.expand("templates", File.cwd!())
 
@@ -12,23 +13,13 @@ defmodule Servy.BearController do
       # |> Enum.filter(&Bear.is_grizzly/1)
       |> Enum.sort(&Bear.order_asc_by_name/2)
 
-    render(conv, "index.eex", bears: bears)
+    View.render(conv, "index.eex", bears: bears)
   end
 
   # Take the entire params map and the do pattern matching gives more flexibility
   def show(conv, %{"id" => id}) do
     bear = Wildthings.get_bear(id)
-    render(conv, "show.eex", bear: bear)
-  end
-
-  defp render(conv, template, bindings \\ []) do
-    content =
-      @templates_path
-      |> Path.join(template)
-      # eval_file isn't a good choice for high-performance web server
-      |> EEx.eval_file(bindings)
-
-    %{conv | status: 200, resp_body: content}
+    View.render(conv, "show.eex", bear: bear)
   end
 
   def create(conv, %{"name" => name, "type" => type} = _params) do
