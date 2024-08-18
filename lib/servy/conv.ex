@@ -19,7 +19,7 @@ defmodule Servy.Conv do
   # Private functions can only be accessed inside its module
   defp status_reason(code) do
     %{
-      200 => "Ok",
+      200 => "OK",
       201 => "Created",
       401 => "Unauthorized",
       403 => "Forbidden",

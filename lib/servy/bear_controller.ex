@@ -2,8 +2,6 @@ defmodule Servy.BearController do
   alias Servy.Wildthings
   alias Servy.Bear
 
-  @templates_path Path.expand("templates", File.cwd!())
-
   import Servy.View, only: [render: 3]
 
   def index(conv) do
@@ -27,7 +25,7 @@ defmodule Servy.BearController do
     %{
       conv
       | status: 201,
-        resp_body: "Create a #{type} bear named #{name}!"
+        resp_body: "Created a #{type} bear named #{name}!"
     }
   end
 

@@ -5,8 +5,8 @@ defmodule Servy.Parser do
   # Transform the request string into a key-value pair, i.e., a map (which corresponds to JS object)
   def parse(request) do
     # parts: 2 option guarantee that String.split/3 always returns two parts
-    [top, params_string] = String.split(request, "\n\n", parts: 2)
-    [request_line | header_lines] = String.split(top, "\n")
+    [top, params_string] = String.split(request, "\r\n\r\n", parts: 2)
+    [request_line | header_lines] = String.split(top, "\r\n")
     [method, path, _] = String.split(request_line, " ")
 
     headers = parse_headers(header_lines)
@@ -38,6 +38,17 @@ defmodule Servy.Parser do
     end)
   end
 
+  @doc """
+  Parses the given param string of the form `key1=value1&key2=value2`
+  into a map with corresponding keys and values.
+
+  ## Examples
+      iex> params_string = "name=Baloo&type=Brown"
+      iex> Servy.Parser.parse_params("application/x-www-form-urlencoded", params_string)
+      %{"name" => "Baloo", "type" => "Brown"}
+      iex> Servy.Parser.parse_params("multipart/form-data", params_string)
+      %{}
+  """
   def parse_params("application/x-www-form-urlencoded", params_string) do
     params_string
     |> String.trim()
