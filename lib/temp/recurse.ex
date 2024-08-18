@@ -22,7 +22,27 @@ defmodule Recurse do
   defp triple([], current_list) do
     current_list |> Enum.reverse()
   end
+
+  # my_map
+  # def my_map([head | tail], anonymous_func) do
+  #   my_map([head | tail], anonymous_func, [])
+  # end
+
+  # def my_map([head | tail], anonymous_func, current_list) do
+  #   my_map(tail, anonymous_func, [anonymous_func.(head) | current_list])
+  # end
+
+  # def my_map([], _, current_list) do
+  #   current_list |> Enum.reverse()
+  # end
+
+  def my_map([head|tail], fun) do
+    [fun.(head) | my_map(tail, fun)]
+  end
+
+  def my_map([], _fun), do: []
 end
 
 IO.puts(Recurse.sum([1, 2, 3, 4, 5], 0))
 IO.inspect(Recurse.triple([1, 2, 3, 4, 5]))
+IO.inspect(Recurse.my_map([1, 2, 3, 4, 5], &(&1 * 5)))
