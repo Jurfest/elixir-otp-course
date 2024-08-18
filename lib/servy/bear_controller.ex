@@ -1,9 +1,10 @@
 defmodule Servy.BearController do
   alias Servy.Wildthings
   alias Servy.Bear
-  alias Servy.View
 
   @templates_path Path.expand("templates", File.cwd!())
+
+  import Servy.View, only: [render: 3]
 
   def index(conv) do
     bears =
@@ -13,13 +14,13 @@ defmodule Servy.BearController do
       # |> Enum.filter(&Bear.is_grizzly/1)
       |> Enum.sort(&Bear.order_asc_by_name/2)
 
-    View.render(conv, "index.eex", bears: bears)
+    render(conv, "index.eex", bears: bears)
   end
 
   # Take the entire params map and the do pattern matching gives more flexibility
   def show(conv, %{"id" => id}) do
     bear = Wildthings.get_bear(id)
-    View.render(conv, "show.eex", bear: bear)
+    render(conv, "show.eex", bear: bear)
   end
 
   def create(conv, %{"name" => name, "type" => type} = _params) do
