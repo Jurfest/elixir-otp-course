@@ -6,4 +6,8 @@
   <% end %>
 </ul>
 
-<!-- eex extends for embedded Elixir -->
+<!--
+eex extends for embedded Elixir.
+There is also, for example, HEEx (HTML + Embedded Elixir),
+which is a performant templating language with support for reusable components.
+-->

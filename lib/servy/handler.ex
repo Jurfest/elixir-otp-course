@@ -9,7 +9,7 @@ defmodule Servy.Handler do
   # It is useful for working with relative paths relative to the current file location.
   # @pages_path Path.expand("../../pages", __DIR__)
   # File.cwd! returns the current working directory. Mix always runs from the root project directory.
-  # Afunction name ending with !, denerally speaking, is a naming convention that conveys that
+  # A function name ending with !, generally speaking, is a naming convention that conveys that
   # the function will raise an exception if it fails. In particular, calling File.cwd! is the
   # same as calling File.cwd but it raises an exception if for some reason there's a problem.
   @pages_path Path.expand("pages", File.cwd!())
