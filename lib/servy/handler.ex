@@ -57,6 +57,10 @@ defmodule Servy.Handler do
     %{conv | status: 200, resp_body: "Bears, Tigers, Lions"}
   end
 
+  def route(%Conv{method: "GET", path: "/api/bears"} = conv) do
+    Servy.Api.BearController.index(conv)
+  end
+
   def route(%Conv{method: "GET", path: "/bears"} = conv) do
     BearController.index(conv)
   end
@@ -140,10 +144,11 @@ defmodule Servy.Handler do
     # The Content-Length header must indicate the size of the body in bytes.
     # Content-Length: #{String.length(conv.resp_body)}
     # HTTP/1.1 #{conv.status} #{status_reason(conv.status)}
+    # Content-Type: text/html\r
 
     """
     HTTP/1.1 #{Conv.full_status(conv)}\r
-    Content-Type: text/html\r
+    Content-Type: #{conv.resp_content_type}\r
     Content-Length: #{byte_size(conv.resp_body)}\r
     \r
     #{conv.resp_body}
