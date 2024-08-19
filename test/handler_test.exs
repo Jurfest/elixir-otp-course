@@ -1,5 +1,5 @@
 defmodule HandlerTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   import Servy.Handler, only: [handle: 1]
 
@@ -181,22 +181,30 @@ defmodule HandlerTest do
            """
   end
 
+  test "DELETE /bears/1" do
+    request = """
+    DELETE /bears/1 HTTP/1.1\r
+    Host: example.com\r
+    User-Agent: ExampleBrowser/1.0\r
+    Accept: */*\r
+    \r
+    """
+
+    response = handle(request)
+
+    assert response == """
+           HTTP/1.1 403 Forbidden\r
+           Content-Type: text/html\r
+           Content-Length: 29\r
+           \r
+           Deleting a bear is forbidden!
+           """
+  end
+
   defp remove_whitespace(text) do
     String.replace(text, ~r{\s}, "")
   end
 end
-
-# # delete
-# request = """
-# DELETE /bears/1 HTTP/1.1
-# Host: example.com
-# User-Agent: ExampleBrowser/1.0
-# Accept: */*
-
-# """
-
-# response = Servy.Handler.handle(request)
-# IO.puts(response)
 
 # # /bears?id=1 - to be rewrite to /bears/1 (juice up a page's SEO)
 # request = """
@@ -238,6 +246,3 @@ end
 # Accept: */*
 
 # """
-
-# response = Servy.Handler.handle(request)
-# IO.puts(response)
