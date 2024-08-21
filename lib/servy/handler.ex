@@ -127,7 +127,6 @@ defmodule Servy.Handler do
         |> markdown_to_html
 
       true ->
-        # Se o arquivo não for encontrado, retorne um erro 404
         %{conv | status: 404, resp_body: "File not found!"}
     end
   end
