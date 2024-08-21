@@ -103,11 +103,33 @@ defmodule Servy.Handler do
     BearController.create(conv, conv.params)
   end
 
-  def route(%Conv{method: "GET", path: "/pages/" <> file} = conv) do
-    @pages_path
-    |> Path.join(file <> ".html")
-    |> File.read()
-    |> handle_file(conv)
+  # def route(%Conv{method: "GET", path: "/pages/" <> file} = conv) do
+  #   @pages_path
+  #   |> Path.join(file <> ".html")
+  #   |> File.read()
+  #   |> handle_file(conv)
+  # end
+
+  def route(%Conv{method: "GET", path: "/pages/" <> name} = conv) do
+    html_file_path = Path.join(@pages_path, "#{name}.html")
+    md_file_path = Path.join(@pages_path, "#{name}.md")
+
+    cond do
+      File.exists?(html_file_path) ->
+        html_file_path
+        |> File.read()
+        |> handle_file(conv)
+
+      File.exists?(md_file_path) ->
+        md_file_path
+        |> File.read()
+        |> handle_file(conv)
+        |> markdown_to_html
+
+      true ->
+        # Se o arquivo não for encontrado, retorne um erro 404
+        %{conv | status: 404, resp_body: "File not found!"}
+    end
   end
 
   # Multi-clause functions
@@ -174,4 +196,10 @@ defmodule Servy.Handler do
     |> Enum.reverse()
     |> Enum.join("\n")
   end
+
+  defp markdown_to_html(%Conv{status: 200} = conv) do
+    %{conv | resp_body: Earmark.as_html!(conv.resp_body)}
+  end
+
+  defp markdown_to_html(%Conv{} = conv), do: conv
 end
