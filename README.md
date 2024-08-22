@@ -10,8 +10,8 @@
 
 1. **Clone the repository**:
     ```sh
-    git clone https://github.com/yourusername/yourproject.git
-    cd yourproject
+    git clone https://github.com/jurfest/elixir-otp-course.git
+    cd elixir-otp-course
     ```
 
 2. **Install dependencies**:
@@ -39,7 +39,7 @@ mix run -e "Servy.HttpServer.start(4000)"
 
 ## Running Tests
 
-### To run tests:
+**To run tests:**
 
 ```sh
 mix test
@@ -47,7 +47,7 @@ mix test
 
 ## Interactive Elixir (IEx)
 
-### You can start an IEx session with your project’s dependencies and configuration loaded by running:
+**You can start an IEx session with your project’s dependencies and configuration loaded by running:** 
 
 ```sh
 iex -S mix
