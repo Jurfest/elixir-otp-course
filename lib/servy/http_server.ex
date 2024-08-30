@@ -32,7 +32,7 @@ defmodule Servy.HttpServer do
     IO.puts("⚡️  Connection accepted!\n")
 
     # Receives the request and sends a response over the client socket.
-    spawn(fn -> serve(client_socket) end)
+    spawn(fn -> serve(client_socket) end) # spawn creates a new lightweight isolated process, to handle then concurrently
 
     # Loop back to wait and accept the next connection.
     accept_loop(listen_socket)
