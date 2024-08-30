@@ -53,6 +53,11 @@ mix test
 iex -S mix
 ```
 
+Then you can start the server with
+```elixir
+iex(1)> Servy.HttpServer.start(4000)
+```
+
 ## More information about Servy
 
 ### Installation
