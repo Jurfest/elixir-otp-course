@@ -3,6 +3,7 @@ defmodule Servy.MixProject do
 
   def project do
     [
+      # prune_code_paths: Mix.env() == :prod,
       app: :servy,
       version: "0.1.0",
       elixir: "~> 1.15",
@@ -14,7 +15,7 @@ defmodule Servy.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger, :eex]
+      extra_applications: [:logger, :eex, :observer, :wx, :runtime_tools]
     ]
   end
 
