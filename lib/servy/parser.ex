@@ -3,6 +3,9 @@ defmodule Servy.Parser do
   alias Servy.Conv
 
   # Transform the request string into a key-value pair, i.e., a map (which corresponds to JS object)
+
+  # The parse function takes a raw HTTP request string and converts it into a Conv
+  # struct that represents the conversation/request in a structured format
   def parse(request) do
     # parts: 2 option guarantee that String.split/3 always returns two parts
     [top, params_string] = String.split(request, "\r\n\r\n", parts: 2)

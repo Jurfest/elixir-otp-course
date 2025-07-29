@@ -2,6 +2,9 @@ defmodule Servy.Conv do
   # A struct instance is just a special kind of map with a fix set of
   # keys and default values.
   # It can be thought also as a typed map - it brings type safety
+
+  # The name of the Struct is the same as the name of the module. A Struct must be
+  # defined in a module and just one Struct can be defined in a module
   defstruct method: "",
             path: "",
             params: %{},
