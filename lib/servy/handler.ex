@@ -33,7 +33,7 @@ defmodule Servy.Handler do
     |> format_response()
   end
 
-  def route(%Conv{method: "GET", path: "/kaboom"} = conv) do
+  def route(%Conv{method: "GET", path: "/kaboom"}) do
     raise "Kaboom!"
   end
 
