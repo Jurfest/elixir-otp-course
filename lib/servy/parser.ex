@@ -52,6 +52,7 @@ defmodule Servy.Parser do
       iex> Servy.Parser.parse_params("multipart/form-data", params_string)
       %{}
   """
+  @spec parse_params(String.t(), String.t()) :: map()
   def parse_params("application/x-www-form-urlencoded", params_string) do
     params_string
     |> String.trim()
