@@ -46,7 +46,8 @@ defmodule Servy.Handler do
 
     where_is_bigfoot = Task.await(task)
 
-    render(conv, "sensors.eex", snapshots: snapshots, location: where_is_bigfoot)
+    # In Elixir, the last argument to a function can be written as a keyword list without square brackets
+    render(conv, "sensors.eex", [snapshots: snapshots, location: where_is_bigfoot])
   end
 
   def route(%Conv{method: "GET", path: "/kaboom"}) do
