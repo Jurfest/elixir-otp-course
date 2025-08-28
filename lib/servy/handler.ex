@@ -44,6 +44,10 @@ defmodule Servy.Handler do
     Servy.PledgeController.index(conv)
   end
 
+  def route(%Conv{method: "GET", path: "/pledges/new"} = conv) do
+    Servy.PledgeController.new(conv)
+  end
+
   def route(%Conv{method: "GET", path: "/sensors"} = conv) do
     task = Task.async(Servy.Tracker, :get_location, ["bigfoot"])
 
