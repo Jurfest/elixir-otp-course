@@ -4,6 +4,18 @@ defmodule Plot do
 end
 
 defmodule CommunityGarden do
+  @moduledoc """
+  A simple registry for community garden plot registrations using Agent.
+  
+  Agent is a simple abstraction around state management in Elixir processes.
+  It provides a straightforward way to maintain state but has limitations:
+  - No built-in error handling or recovery mechanisms
+  - Limited to simple state operations
+  - Not suitable for complex business logic or workflows
+  - Cannot run asynchronous queries or computations in the server process
+  
+  For more complex scenarios, consider using GenServer instead.
+  """
   def start(opts \\ []) do
     # extract options now (in case you add filtering in the future)
     _opts = Keyword.merge([filter: nil], opts)
